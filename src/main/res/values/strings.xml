@@ -2,9 +2,11 @@
 <resources>
 
     <string name="app_name">GapTap</string>
+    <string name="MainActivitySubtitle">     NFC Paypal Purchasing</string>
     <string name="action_settings">Settings</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section1">Welcome!</string>
+    <string name="title_section2">Sell Something</string>
+    <string name="title_section3">Bought List</string>
 
+    <string name="WelcomeContent">GapTap enables you to add NFC price tags to items you want to sell.\n\nWhen tapped the tags show the price of your item, details pictures and the price.\n\nIf someone purchases your item you will receive an immediate notification.\n\nUseful for Yard sales, small makers faires or whatever else!</string>
 </resources>

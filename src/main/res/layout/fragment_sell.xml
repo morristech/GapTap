@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/itemName"
+            android:layout_marginLeft="@dimen/WelcomeSidePadding"
+            android:layout_marginRight="@dimen/WelcomeSidePadding"
+            android:hint="Name of the item you're selling"
+            android:layout_marginTop="24dp"
+            android:inputType="text|textCapSentences"/>
+
+    <EditText
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:ems="10"
+            android:id="@+id/itemPrice"
+            android:layout_below="@+id/itemName"
+            android:layout_alignRight="@+id/itemName"
+            android:hint="£0.00"
+            android:layout_marginTop="20dp"
+            android:textSize="@dimen/PriceSize"/>
+
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
+            android:ems="10"
+            android:id="@+id/itemDesc"
+            android:layout_below="@+id/itemPrice"
+            android:layout_alignLeft="@+id/itemName"
+            android:layout_alignRight="@+id/itemName"
+            android:layout_marginTop="20dp"
+            android:lines="4"
+            android:hint="Description of the item"
+            android:gravity="bottom|left"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Write To a Tag"
+            android:id="@+id/startWritingButton"
+            android:layout_below="@+id/itemDesc"
+            style="@style/ButtonText"
+            android:background="@drawable/dark_blue_button"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"/>
+
+    <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:visibility="gone"
+            android:layout_below="@+id/startWritingButton"
+            android:layout_centerHorizontal="true"/>
+</RelativeLayout>

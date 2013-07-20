@@ -5,19 +5,29 @@ import java.util.Locale;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gcm.GCMRegistrar;
+
+import org.json.JSONObject;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -36,14 +46,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     ViewPager mViewPager;
 
+    /**
+     * Stores the instance of GCM registration ID
+     */
+    String regId = "";
+
+    RequestQueue queue = null;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        queue = Volley.newRequestQueue(this);
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setTitle(getString(R.string.MainActivitySubtitle));
+
+        actionBar.setIcon(R.drawable.ab_logo);
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the app.
@@ -74,6 +98,66 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+        //GCM stuff
+        GCMRegistrar.checkDevice(this);
+        GCMRegistrar.checkManifest(this);
+        regId = GCMRegistrar.getRegistrationId(this);
+
+        if (regId.equals(""))
+        {
+            Log.v("GCM", "Registering");
+            GCMRegistrar.register(this, "260532533724");
+        }
+        else
+        {
+            Log.v("GCM", "Already registered");
+        }
+
+        //Log.e("GCMID",GCMRegistrar.getRegistrationId(this));
+
+        JSONObject post = new JSONObject();
+        try
+        {
+            post.put("gcmid", regId);
+            post.put("deviceid", Settings.Secure.getString(this.getContentResolver(),Settings.Secure.ANDROID_ID));
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this, "An Error Was encountered connecting to the GCM cloud. Acknolwedgement of purchases will be unavailable", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, "https://gaptap.co/api/registergcm.php", post, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                Log.e("response", response.toString());
+                try
+                {
+                    if(response.has("success") && response.getBoolean("success"))
+                    {
+                        //Alls cool
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        queue.add(jsObjRequest);
     }
 
     @Override
@@ -109,14 +193,36 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(int position)
+        {
             // getItem is called to instantiate the fragment for the given page.
             // Return a DummySectionFragment (defined as a static inner class
             // below) with the page number as its lone argument.
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-            fragment.setArguments(args);
+            Fragment fragment = null;
+
+            switch(position)
+            {
+                case 0:
+                {
+                    fragment = new Welcome();
+                }
+                break;
+
+                case 1:
+                {
+                    fragment = new Sell();
+                }
+                break;
+
+                case 2:
+                {
+                    fragment = new BuyList();
+                }
+                break;
+            }
+            //fragment.setArguments(args);
+
+
             return fragment;
         }
 
